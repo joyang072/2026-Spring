@@ -1,0 +1,115 @@
+\documentclass[11pt]{article}
+\usepackage{cs1200}
+\usepackage{tikz}
+\usepackage{chessboard}
+\usepackage{xcolor}
+\usepackage{float}
+
+\initialize
+
+\begin{document}
+
+\psHeader{5}{Thu Mar. 26, 2026 (11:59pm)}
+
+Please see the syllabus for the full collaboration and generative AI policy, as well as information on grading, late days, and revisions.
+
+All sources of ideas, including (but not restricted to) any collaborators, AI tools, people outside of the course, websites, ARC tutors, and textbooks other than Hesterberg--Vadhan must be listed on your submitted homework along with a brief description of how they influenced your work. You need not cite core course resources, which are lectures, the Hesterberg--Vadhan textbook, sections, SREs, problem sets and solutions sets from earlier in the semester. If you use any concepts, terminology, or problem-solving approaches not covered in the course material by that point in the semester, you must describe the source of that idea. If you credit an AI tool for a particular idea, then you should also provide a primary source that corroborates it. Github Copilot and similar tools should be turned off when working on programming assignments.
+
+If you did not have any collaborators or external resources, please write 'none.' Please remember to select pages when you submit on Gradescope. A problem set on the border between two letter grades cannot be rounded up if pages are not selected OR collaborators not noted.
+
+\vspace{1em}
+
+\textbf{Your name: }
+
+\textbf{Collaborators and External Resources:}
+
+\textbf{No. of late days used on previous psets: }
+
+\textbf{No. of late days used after including this pset: }
+
+\begin{enumerate}
+   \item  (Solving Games)
+     Consider playing a solo game on an $n\times n$ chessboard.  You have one piece, a chess knight, which starts in the lower-left corner, and your goal is to reach any of the other three corners in as few moves as possible.  Like a usual chess knight, in one move, you can move to any position that is two squares away in a horizontal direction and one square away in a vertical direction, or two squares away in a vertical direction and one square away in a horizontal direction.  There is a catch, however: some squares have visible landmines, so you cannot move to them (since you do not want set off an explosion). \
+    \begin{enumerate}
+    \item
+    Give an algorithm that achieves the above goal in time $O(n^2)$ by reduction to either the ShortestWalks problem or the SingleSourceShortestPaths problem. The algorithm should output $\bot$ if no sequence of moves can take you to any of the other three corners when started in the lower-left corner. Discuss correctness and runtime of the algorithm. (Note: if reducing to SingleSourceShortestPaths, we haven't defined abstractly what it means to reduce a computational problem to a data structure problem, but you may construct and use a SingleSourceShortestPaths data structure on an appropriately constructed graph.)
+
+    \item Carry out your algorithm on the $5\times 5$ board shown below, listing both the frontier vertices and the predecessor relationships at each stage of BFS (the red square symbols are landmines).
+    \begin{figure} [H]
+    \centering
+    \begin{tikzpicture}
+        \definecolor{white}{rgb}{1,1,1}
+        \definecolor{black}{rgb}{0.5,0.5,0.5}
+        \definecolor{darkred}{rgb}{0.6, 0, 0}
+
+        % Landmine coordinates
+        % \def\landmines{(2.5,1.5), (3.5,2.5), (4.5,1.5), (1.5,3.5), (3.5,1.5),(3.5,3.5),(4.5,4.5),(4.5,5.5),(2.5,4.5), (4.5,3.5)} %old landmines
+        \def\landmines{(2.5,1.5), (1.5,5.5), (5.5,1.5), (1.5,3.5), (3.5,1.5),(3.5,3.5),(4.5,4.5),(4.5,5.5),(2.5,4.5), (4.5,3.5)}
+
+        % Loop to create the 5x5 grid
+        \foreach \x in {1,...,5} {
+            \foreach \y in {1,...,5} {
+                % Alternate black and white squares
+                \pgfmathparse{mod(\x+\y,2)}
+                \ifnum\pgfmathresult=0
+                    \fill[white] (\x, \y) rectangle ++(1,1);
+                \else
+                    \fill[black] (\x, \y) rectangle ++(1,1);
+                \fi
+            }
+        }
+
+        % X-axis labels
+        \foreach \x/\letter in {1/a, 2/b, 3/c, 4/d, 5/e} {
+            \node at (\x+0.5, 0.5) {\letter};
+        }
+
+        % Y-axis labels
+        \foreach \y in {1, 2, 3, 4, 5} {
+            \node at (0.5, \y+0.5) {\y};
+        }
+
+        % Knight symbol
+        \node at (1.5, 1.5) {\knight};
+
+        %Adding landmines
+        \foreach \position in \landmines {
+            \draw[fill=red, opacity=0.5] \position ++(-0.3,-0.3) rectangle ++(0.6,0.6);
+            \node at \position {\textcolor{darkred}{\Huge$\circ$}};
+        }
+
+        % Grid lines
+        \draw[step=1cm,black,thick] (1,1) grid (6,6);
+
+    \end{tikzpicture}
+    \end{figure}
+    \end{enumerate}
+
+
+  \item (Reductions Between Variants of \IndependentSet)
+ Consider the following three variants of the IndependentSet problem:
+ \begin{itemize}
+     \item \IndependentSetOptimizationSearch: given a graph $G$, find the largest independent set in $G$.
+     \item \IndependentSetThresholdSearch: given a graph $G$ and a number $k\in \N$, find an independent set of size at least $k$ in $G$ (if one exists).
+     \item \IndependentSetThresholdDecision: given a graph $G$ and a number $k\in \N$, decide (by outputting YES or NO) whether or not there is an independent set of size at least $k$ in $G$.
+ \end{itemize}
+
+ \begin{enumerate}
+ \item Suppose that there is an algorithm running in time $T(n,m)\geq n+m$ that solves \IndependentSetOptimizationSearch\ on graphs with at most $n$ vertices and at most $m$ edges.  Prove that there is an algorithm running in time $O(T(n,m))$ that solves \IndependentSetThresholdDecision. Be sure to both prove correctness and analyze runtime for the algorithm you provide.
+
+ \item Suppose that there is an algorithm running in time $T(n,m)\geq n+m$ that solves \IndependentSetThresholdSearch\ on graphs with at most $n$ vertices and at most $m$ edges.  Prove that there is an algorithm running in time $O((\log n)\cdot T(n,m))$ that solves \IndependentSetOptimizationSearch.  (Hint: Come up with a reduction that makes at most $\log n$ oracle calls.  You might find it useful to first find one that makes at most $n$ oracle calls.) You do not need to prove correctness for your algorithm, but do analyze its runtime.
+
+  \item Suppose that there is an algorithm
+ running in time $T(n,m)\geq n+m$ that solves \IndependentSetThresholdDecision.   Prove that there is an algorithm running in time $O(n\cdot T(n,m))$ that solves \IndependentSetThresholdSearch.
+(Hint: Show that $G$ has an independent set of size at least $k$ containing vertex $v$ iff $G-N(v)$ has an independent set of size at least $k-1$, where $G-N(v)$ denotes the graph obtained by removing $v$ and all of its neighbors from $G$.  Use this fact and the oracle to determine for each vertex $v$, whether or not to include $v$ in the independent set.  Remember to update the graph appropriately after each decision.) Be sure to both prove correctness and analyze runtime for the algorithm you provide.
+
+\end{enumerate}
+ We remark (but you don't need to submit anything) that the combination of the three previous problem parts means that for every constant $c\in [1,2]$, if there is an algorithm solving any one of the three problems in time $(n+m)^{O(1)}\cdot c^n$, there are algorithms solving the other two problems in $(n+m)^{O(1)}\cdot c^n$ time.  The best known algorithm (by Xiao and Nagamochi, 2013) has $c \approx 1.1996$.
+
+\item (Reflection) Take one homework problem you have worked on this semester that you struggled to understand and solve, and explain how the struggle itself was valuable.  In the context of this question, describe the struggle and how you overcame the struggle. You might also discuss whether struggling built aspects of character in you (e.g. endurance, self-confidence, competence to solve new problems) and how these virtues might benefit you in later ventures.
+
+\item Once you're done with this problem set, please fill out \href{https://forms.gle/5CwFJoH9jcxGMGkp6}{this survey} so that we can gather students' thoughts on the problem set, and the class in general. It's not required, but we really appreciate all responses! \textbf{This week would be a great time to provide any mid-semester feedback, which could help us improve the course in the second half of the semester.}
+
+\end{enumerate}
+
+\end{document}
